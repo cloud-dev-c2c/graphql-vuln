@@ -44,7 +44,7 @@ jobs:
       - name: Login to Aqua Registry and run Image Scan
         run: |
           docker login registry.aquasec.com -u ${{ secrets.AQUA_USER }} -p ${{ secrets.AQUA_PASSWORD }}
-          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2409.7.16 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "Docker Hub" $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2409.7.16 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "ECR" $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Manifest Generation
         run: |
           export BILLY_SERVER=$BILLY_SERVER

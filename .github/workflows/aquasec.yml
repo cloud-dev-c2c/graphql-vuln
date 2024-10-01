@@ -33,12 +33,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run Aqua scanner
-        uses: docker://aquasec/aqua-scanner
+        uses: docker://aquasec/aqua-scanner:latest
         env: 
           TRIVY_USER: ${{secrets.AQUA_USER}}
           TRIVY_PASSWORD: ${{secrets.AQUA_PASSWORD}}
         with:
-          args: trivy -d fs --scanners misconfig,vuln,secret --dotnet-proj --db-repository=registry.aquasec.com/trivy-db:2 --checks-bundle-repository=registry.aquasec.com/trivy-checks:1 --java-db-repository=registry.aquasec.com/trivy-java-db:1 .
+          args: trivy -d fs --scanners misconfig,vuln,secret --checks-bundle-repository=registry.aquasec.com/trivy-checks:1 --java-db-repository=registry.aquasec.com/trivy-java-db:1 .
       - name: Build image locally
         run: |
           docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .

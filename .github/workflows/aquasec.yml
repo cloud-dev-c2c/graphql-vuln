@@ -24,6 +24,7 @@ jobs:
       AQUA_PASSWORD: ${{secrets.AQUA_PASSWORD}}
       AQUA_HOST: ${{secrets.AQUA_HOST}}
       AQUA_TOKEN: ${{secrets.AQUA_TOKEN}}
+      TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db:2"
       
     permissions:
         id-token: write

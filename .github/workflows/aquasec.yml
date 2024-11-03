@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - deploy-rsademo
+      
 jobs:
   all-in-one:
     name: Aqua scanner
@@ -44,7 +45,7 @@ jobs:
       - name: Login to Aqua Registry and run Image Scan
         run: |
           docker login registry.aquasec.com -u ${{ secrets.TRIVY_USERNAME }} -p ${{ secrets.TRIVY_PASSWORD }}
-          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2410.6.26 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "Docker Hub" $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2410.6.26 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "Docker Hub" $ECR_REGISTRY/$ECR_REPOSITORY:vulhubredis$IMAGE_TAG
       - name: Manifest Generation
         run: |
           export BILLY_SERVER=$BILLY_SERVER
@@ -60,7 +61,7 @@ jobs:
               --access-token "${{ secrets.GITHUB_TOKEN }}" \
               --aqua-key "${{ secrets.AQUA_KEY }}" \
               --aqua-secret "${{ secrets.AQUA_SECRET }}" \
-              --artifact-path "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+              --artifact-path "$ECR_REGISTRY/$ECR_REPOSITORY:vulhubredis$IMAGE_TAG"
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -73,6 +74,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Tag and push image to Amazon ECR (+latest)
         run: |
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:vulhubredis$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORYvulhubredis-latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:vulhubredis$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:vulhubredis-latest

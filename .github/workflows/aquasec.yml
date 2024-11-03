@@ -2,7 +2,7 @@ name: build
 on:
   push:
     branches:
-      - deploy-cloudhub-dev
+      - deploy-rsademo
 jobs:
   all-in-one:
     name: Aqua scanner
@@ -20,10 +20,13 @@ jobs:
       AQUA_URL: ${{secrets.AQUA_URL}}
       CSPM_URL: ${{secrets.CSPM_URL}}
       BILLY_SERVER: ${{secrets.BILLY_DEV}}
-      AQUA_USER: ${{secrets.AQUA_USER}}
-      AQUA_PASSWORD: ${{secrets.AQUA_PASSWORD}}
+      TRIVY_USER: ${{secrets.AQUA_USER}}
+      TRIVY_PASSWORD: ${{secrets.AQUA_PASSWORD}}
       AQUA_HOST: ${{secrets.AQUA_HOST}}
       AQUA_TOKEN: ${{secrets.AQUA_TOKEN}}
+      TRIVY_DB_REPOSITORY: "registry.aquasec.com/trivy-db:2"
+      TRIVY_JAVA_DB_REPOSITORY: "registry.aquasec.com/trivy-java-db:1"
+      TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
       
     permissions:
         id-token: write
@@ -37,7 +40,7 @@ jobs:
           TRIVY_USERNAME: ${{secrets.AQUA_USER}}
           TRIVY_PASSWORD: ${{secrets.AQUA_PASSWORD}}
         with:
-          args: trivy -d --db-repository=registry.aquasec.com/trivy-db:2 --checks-bundle-repository=registry.aquasec.com/trivy-checks:1 --java-db-repository=registry.aquasec.com/trivy-java-db:1 fs --scanners misconfig,vuln,secret . --sast
+          args: trivy -d fs --scanners misconfig,vuln,secret . --sast
       - name: Build image locally
         run: |
           docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .

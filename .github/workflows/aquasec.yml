@@ -17,7 +17,7 @@ jobs:
       AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
       TRIVY_RUN_AS_PLUGIN: 'aqua'
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      TRIVY_USER: ${{secrets.TRIVY_USERNAME}}
+      TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
       TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
       AQUA_HOST: ${{secrets.AQUA_HOST}}
       AQUA_TOKEN: ${{secrets.AQUA_TOKEN}}

@@ -26,7 +26,9 @@ jobs:
       TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
       GITHUB_REF: "deploy-rsademo"
       OVERRIDE_BRANCH: "deploy-rsademo"
+      OVERRIDE_SOURCE_BRANCH: "deploy-rsademo"
       OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
+
       
     permissions:
         id-token: write
@@ -49,7 +51,7 @@ jobs:
           OVERRIDE_BRANCH: "deploy-rsademo"
           OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
         with:
-          args: GITHUB_REF=deploy-rsademo trivy -d fs --scanners misconfig,vuln,secret . --sast
+          args: trivy -d fs --scanners misconfig,vuln,secret . --sast
       - name: Build image locally
         run: |
           docker build -t "$ECR_REGISTRY/aquainteglab:$ECR_REPOSITORY$IMAGE_TAG" .

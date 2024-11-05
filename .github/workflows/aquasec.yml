@@ -38,6 +38,7 @@ jobs:
           TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
           GITHUB_REF: "deploy-rsademo"
           OVERRIDE_BRANCH: "deploy-rsademo"
+          OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
         with:
           args: trivy -d fs --scanners misconfig,vuln,secret . --sast
       - name: Build image locally

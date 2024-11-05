@@ -2,12 +2,12 @@ name: build
 on:
   push:
     branches:
-      - deploy-cloudhub-dev
+      - deploy-rsademo
 jobs:
   all-in-one:
     name: Aqua scanner
     runs-on: ubuntu-latest
-    environment: cloudhub-dev
+    environment: rsademo-dev
     env:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
@@ -17,13 +17,14 @@ jobs:
       AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
       TRIVY_RUN_AS_PLUGIN: 'aqua'
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      AQUA_URL: ${{secrets.AQUA_URL}}
-      CSPM_URL: ${{secrets.CSPM_URL}}
-      BILLY_SERVER: ${{secrets.BILLY_DEV}}
-      AQUA_USER: ${{secrets.AQUA_USER}}
-      AQUA_PASSWORD: ${{secrets.AQUA_PASSWORD}}
+      TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
+      TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
       AQUA_HOST: ${{secrets.AQUA_HOST}}
       AQUA_TOKEN: ${{secrets.AQUA_TOKEN}}
+      TRIVY_DB_REPOSITORY: "registry.aquasec.com/trivy-db:2"
+      TRIVY_JAVA_DB_REPOSITORY: "registry.aquasec.com/trivy-java-db:1"
+      TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
+      OVERRIDE_SOURCE_BRANCH: "deploy-rsademo"
       
     permissions:
         id-token: write
@@ -31,20 +32,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: test env variables
+        run: |
+          echo $OVERRIDE_SOURCE_BRANCH
+          printenv
       - name: Run Aqua scanner
         uses: docker://aquasec/aqua-scanner:latest
         env: 
-          TRIVY_USERNAME: ${{secrets.AQUA_USER}}
-          TRIVY_PASSWORD: ${{secrets.AQUA_PASSWORD}}
+          TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
+          TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
         with:
-          args: trivy -d --db-repository=registry.aquasec.com/trivy-db:2 --checks-bundle-repository=registry.aquasec.com/trivy-checks:1 --java-db-repository=registry.aquasec.com/trivy-java-db:1 fs --scanners misconfig,vuln,secret . --sast
+          args: trivy -d fs --scanners misconfig,vuln,secret . --sast
       - name: Build image locally
         run: |
-          docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
+          docker build -t "$ECR_REGISTRY/aquainteglab:$ECR_REPOSITORY$IMAGE_TAG" .
       - name: Login to Aqua Registry and run Image Scan
         run: |
-          docker login registry.aquasec.com -u ${{ secrets.AQUA_USER }} -p ${{ secrets.AQUA_PASSWORD }}
-          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2409.7.16 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "ECR" $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker login registry.aquasec.com -u ${{ secrets.TRIVY_USERNAME }} -p ${{ secrets.TRIVY_PASSWORD }}
+          docker run -v /var/run/docker.sock:/var/run/docker.sock registry.aquasec.com/scanner:2410.6.26 scan --token ${{secrets.AQUA_TOKEN}} --host ${{secrets.AQUA_HOST}} --local --registry "Docker Hub" $ECR_REGISTRY/aquainteglab:$ECR_REPOSITORY$IMAGE_TAG
       - name: Manifest Generation
         run: |
           export BILLY_SERVER=$BILLY_SERVER
@@ -60,8 +65,7 @@ jobs:
               --access-token "${{ secrets.GITHUB_TOKEN }}" \
               --aqua-key "${{ secrets.AQUA_KEY }}" \
               --aqua-secret "${{ secrets.AQUA_SECRET }}" \
-              --cspm-url $CSPM_URL \
-              --artifact-path "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+              --artifact-path "$ECR_REGISTRY/aquainteglab:$ECR_REPOSITORY$IMAGE_TAG"
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -74,6 +78,5 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Tag and push image to Amazon ECR (+latest)
         run: |
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/aquainteglab:$ECR_REPOSITORY$IMAGE_TAG
+

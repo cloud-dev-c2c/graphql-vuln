@@ -24,6 +24,9 @@ jobs:
       TRIVY_DB_REPOSITORY: "registry.aquasec.com/trivy-db:2"
       TRIVY_JAVA_DB_REPOSITORY: "registry.aquasec.com/trivy-java-db:1"
       TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
+      GITHUB_REF: "deploy-rsademo"
+      OVERRIDE_BRANCH: "deploy-rsademo"
+      OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
       
     permissions:
         id-token: write
@@ -31,6 +34,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: test env variables
+        run: |
+          echo $GITHUB_REF
+          echo $OVERRIDE_BRANCH
+          echo $OVERRIDE_TARGET_BRANCH
+          printenv
       - name: Run Aqua scanner
         uses: docker://aquasec/aqua-scanner:latest
         env: 

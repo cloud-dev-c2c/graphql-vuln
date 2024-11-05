@@ -36,6 +36,7 @@ jobs:
         env: 
           TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
           TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
+          GITHUB_REF: "deploy-rsademo"
           OVERRIDE_BRANCH: "deploy-rsademo"
         with:
           args: trivy -d fs --scanners misconfig,vuln,secret . --sast

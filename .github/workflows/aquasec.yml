@@ -24,11 +24,7 @@ jobs:
       TRIVY_DB_REPOSITORY: "registry.aquasec.com/trivy-db:2"
       TRIVY_JAVA_DB_REPOSITORY: "registry.aquasec.com/trivy-java-db:1"
       TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
-      GITHUB_REF: "deploy-rsademo"
-      OVERRIDE_BRANCH: "deploy-rsademo"
       OVERRIDE_SOURCE_BRANCH: "deploy-rsademo"
-      OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
-
       
     permissions:
         id-token: write
@@ -38,18 +34,13 @@ jobs:
         uses: actions/checkout@v2
       - name: test env variables
         run: |
-          echo $GITHUB_REF
-          echo $OVERRIDE_BRANCH
-          echo $OVERRIDE_TARGET_BRANCH
+          echo $OVERRIDE_SOURCE_BRANCH
           printenv
       - name: Run Aqua scanner
         uses: docker://aquasec/aqua-scanner:latest
         env: 
           TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
           TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
-          GITHUB_REF: "deploy-rsademo"
-          OVERRIDE_BRANCH: "deploy-rsademo"
-          OVERRIDE_TARGET_BRANCH: "deploy-rsademo"
         with:
           args: trivy -d fs --scanners misconfig,vuln,secret . --sast
       - name: Build image locally

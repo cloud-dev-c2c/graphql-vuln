@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - deploy-cloudhub-dev
+      
 jobs:
   all-in-one:
     name: Aqua scanner

@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: cloudhub-dev
     env:
+      AQUA_URL: ${{secrets.AQUA_URL}}
+      CSPM_URL: ${{secrets.CSPM_URL}}
+      BILLY_SERVER: ${{secrets.BILLY_DEV}}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -18,14 +21,13 @@ jobs:
       AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
       TRIVY_RUN_AS_PLUGIN: 'aqua'
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      TRIVY_USERNAME: ${{secrets.TRIVY_USERNAME}}
-      TRIVY_PASSWORD: ${{secrets.TRIVY_PASSWORD}}
+      TRIVY_USERNAME: ${{secrets.AQUA_USER}}
+      TRIVY_PASSWORD: ${{secrets.AQUA_PASSWORD}}
       AQUA_HOST: ${{secrets.AQUA_HOST}}
       AQUA_TOKEN: ${{secrets.AQUA_TOKEN}}
       TRIVY_DB_REPOSITORY: "registry.aquasec.com/trivy-db:2"
       TRIVY_JAVA_DB_REPOSITORY: "registry.aquasec.com/trivy-java-db:1"
       TRIVY_CHECKS_BUNDLE_REPOSITORY: "registry.aquasec.com/trivy-checks:1"
-      OVERRIDE_SOURCE_BRANCH: "main"
       
     permissions:
         id-token: write
